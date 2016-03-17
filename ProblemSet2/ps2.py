@@ -1,14 +1,15 @@
 # 6.00.2x Problem Set 2: Simulating robots
 
+import abc
 import math
 import random
+import pylab
 
 # from . import ps2_visualize
-import pylab
 
 
 # For Python 2.7:
-from . ps2_verify_movement27 import *
+# from . ps2_verify_movement27 import *
 
 # If you get a "Bad magic number" ImportError, you are not using 
 # Python 2.7 and using most likely Python 2.6:
@@ -149,6 +150,7 @@ class RectangularRoom(object):
         Return a random position inside the room.
 
         returns: a Position object.
+        :rtype: object
         """
         # TODO P1.6: DONE Getting a random position in the room
         m = random.randrange(0, self.width)
@@ -181,6 +183,9 @@ class Robot(object):
     Subclasses of Robot should provide movement strategies by implementing
     updatePositionAndClean(), which simulates a single time-step.
     """
+    __metaclass__ = abc.ABCMeta
+
+    # TODO P1.8: DONE Initializing the object
 
     def __init__(self, room, speed):
         """
@@ -190,8 +195,14 @@ class Robot(object):
 
         room:  a RectangularRoom object.
         speed: a float (speed > 0)
+        :type speed: float
         """
-        raise NotImplementedError
+        self.room = room
+        self.speed = speed
+        self.position = self.room.getRandomPosition()
+        self.direction = random.randint(0, 359) # 359 since randint is a closed interval
+
+    # TODO 1.9 DONE Accessing the robot's position
 
     def getRobotPosition(self):
         """
@@ -199,7 +210,10 @@ class Robot(object):
 
         returns: a Position object giving the robot's position.
         """
-        raise NotImplementedError
+        assert isinstance(self.position, Position)
+        return self.position
+
+    # TODO 1.10 DONE Accessing the robot's direction
 
     def getRobotDirection(self):
         """
@@ -208,24 +222,33 @@ class Robot(object):
         returns: an integer d giving the direction of the robot as an angle in
         degrees, 0 <= d < 360.
         """
-        raise NotImplementedError
+        assert 0 <= self.direction < 360
+        return self.direction
+
+    # TODO 1.11: DONE Setting the robot's position
 
     def setRobotPosition(self, position):
         """
         Set the position of the robot to POSITION.
 
-        position: a Position object.
+        :param position: a Position object.
         """
-        raise NotImplementedError
+        assert isinstance(position, Position)
+        self.position = position
 
+    # TODO 1.12 DONE Setting the robot's direction
+    
     def setRobotDirection(self, direction):
         """
         Set the direction of the robot to DIRECTION.
 
-        direction: integer representing an angle in degrees
+        :param direction: integer representing an angle in degrees
+        :type direction: int
         """
-        raise NotImplementedError
+        assert 0 <= direction < 360
+        self.direction = direction
 
+    @abc.abstractmethod
     def updatePositionAndClean(self):
         """
         Simulate the raise passage of a single time-step.
