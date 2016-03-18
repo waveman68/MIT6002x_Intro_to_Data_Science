@@ -11,7 +11,7 @@ import Tkinter
 from ps2_visualize import *
 
 # For Python 2.7:
-from ps2_verify_movement27 import *
+# from ps2_verify_movement27 import testRobotMovement
 
 
 # If you get a "Bad magic number" ImportError, you are not using
@@ -291,7 +291,7 @@ class StandardRobot(Robot):
 
 
 # Uncomment this line to see your implementation of StandardRobot in action!
-testRobotMovement(StandardRobot, RectangularRoom)
+# testRobotMovement(StandardRobot, RectangularRoom)
 
 
 # === Problem 3
@@ -308,35 +308,61 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
     width: an int (width > 0)
     height: an int (height > 0)
     min_coverage: a float (0 <= min_coverage <= 1.0)
-    num_trials: an int (num_trials > 0)
+    :type robot_type: object
+    :type min_coverage: float
+    :param num_trials: an int (num_trials > 0)
     :type num_robots: int
     :param num_robots: an int (num_robots > 0)
     :param robot_type: class of robot to be instantiated (e.g. StandardRobot or
                 RandomWalkRobot)
     """
-    trial_room = RectangularRoom(width, height)
-    robots = []  # list for robot objects
-    robot_positions = []  # list for the position objects of the robots
+    trial_rooms = []
+    time_steps = []
 
-    # spawn robot objects and add them to the robots list
-    for i in range(0, num_robots):
-        robots.append(StandardRobot(trial_room, speed))
+    for n in range(num_trials):
+        trial_rooms.append(RectangularRoom(width, height))
+        trial_room = trial_rooms[n]
+        robots = []  # list for robot objects
+        robot_positions = []
 
-        if robots[i].getRobotPosition() not in robot_positions:
-            robot_positions.append(robots[i].getRobotPosition)
-        else:   # avoid 2 robots in the same position
-            while robots[i].getRobotPosition() in robot_positions:
+        # spawn robot objects and add them to the robots list
+        for i in range(0, num_robots):
+            robots.append(robot_type(trial_room, speed))
+            r = robots[i]
+
+            # avoid 2 robots in the same position
+            while r.getRobotPosition() in robot_positions:
                 # generate new robot positions until not in occupied position
                 robots[i].setRobotPosition(trial_room.getRandomPosition())
-            robot_positions.append(robots[i].getRobotPosition)
+            robot_positions.append(r.getRobotPosition())
 
-    for p in robot_positions:
-        print('Robot #', i, 'has position (', p.getX(), ', ', p.getY())
+        coverage = trial_room.getNumCleanedTiles() / float(
+            trial_room.getNumTiles())
+        time_step = 0
+
+        while coverage < min_coverage:
+            for r in robots:
+                r.updatePositionAndClean()
+            num_cleaned = trial_room.getNumCleanedTiles()
+            num_tiles = trial_room.getNumTiles()
+            coverage = num_cleaned / float(num_tiles)
+            time_step += 1
+        time_steps.append(time_step)
+
+    return sum(time_steps) / float(len(time_steps))
 
 
 # Uncomment this line to see how much your simulation takes on average
-# print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
-
+print('1 robot, 5 x 5, 100% coverage')
+print(runSimulation(1, 1.0, 5, 5, 1.0, 30, StandardRobot))
+print('1 robot, 10 x 10, 75% coverage')
+print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
+print('1 robot, 10 x 10, 90% coverage')
+print(runSimulation(1, 1.0, 10, 10, 0.9, 30, StandardRobot))
+print('1 robot, 20 x 20, 100% coverage')
+print(runSimulation(1, 1.0, 20, 20, 1.0, 30, StandardRobot))
+print('3 robot, 20 x 20, 100% coverage')
+print(runSimulation(3, 1.0, 20, 20, 1.0, 30, StandardRobot))
 
 # === Problem 4
 class RandomWalkRobot(Robot):
