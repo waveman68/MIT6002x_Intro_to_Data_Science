@@ -1,17 +1,20 @@
 # 6.00.2x Problem Set 2: Simulating robots
 
-import abc
+# import abc
 import math
+import matplotlib
 import random
 import pylab
+import Tkinter
 
-# from . import ps2_visualize
-# a change for synch
+
+from ps2_visualize import *
 
 # For Python 2.7:
-# from . ps2_verify_movement27 import *
+from ps2_verify_movement27 import *
 
-# If you get a "Bad magic number" ImportError, you are not using 
+
+# If you get a "Bad magic number" ImportError, you are not using
 # Python 2.7 and using most likely Python 2.6:
 
 
@@ -183,7 +186,7 @@ class Robot(object):
     Subclasses of Robot should provide movement strategies by implementing
     updatePositionAndClean(), which simulates a single time-step.
     """
-    __metaclass__ = abc.ABCMeta
+    # __metaclass__ = abc.ABCMeta
 
     # TODO P1.8: DONE Initializing the object
 
@@ -199,8 +202,9 @@ class Robot(object):
         """
         self.room = room
         self.speed = speed
-        self.position = self.room.getRandomPosition()
-        self.direction = random.randint(0, 359) # 359 since randint is a closed interval
+        self.robot_position = self.room.getRandomPosition()
+        self.direction = random.randint(0, 359)  # 359 since randint is a closed interval
+        self.room.cleanTileAtPosition(self.robot_position)
 
     # TODO 1.9 DONE Accessing the robot's position
 
@@ -210,8 +214,8 @@ class Robot(object):
 
         returns: a Position object giving the robot's position.
         """
-        assert isinstance(self.position, Position)
-        return self.position
+        assert isinstance(self.robot_position, Position)
+        return self.robot_position
 
     # TODO 1.10 DONE Accessing the robot's direction
 
@@ -234,10 +238,10 @@ class Robot(object):
         :param position: a Position object.
         """
         assert isinstance(position, Position)
-        self.position = position
+        self.robot_position = position
 
     # TODO 1.12 DONE Setting the robot's direction
-    
+
     def setRobotDirection(self, direction):
         """
         Set the direction of the robot to DIRECTION.
@@ -248,7 +252,7 @@ class Robot(object):
         assert 0 <= direction < 360
         self.direction = direction
 
-    @abc.abstractmethod
+    # @abc.abstractmethod
     def updatePositionAndClean(self):
         """
         Simulate the raise passage of a single time-step.
@@ -276,11 +280,18 @@ class StandardRobot(Robot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError
+        new_pos = self.robot_position.getNewPosition(self.direction, self.speed)
+        new_direction = self.getRobotDirection()
+        while not self.room.isPositionInRoom(new_pos):
+            new_direction = random.randint(0, 359)
+            new_pos = self.robot_position.getNewPosition(new_direction, self.speed)
+        self.setRobotPosition(new_pos)
+        self.setRobotDirection(new_direction)
+        self.room.cleanTileAtPosition(self.getRobotPosition())
 
 
 # Uncomment this line to see your implementation of StandardRobot in action!
-##testRobotMovement(StandardRobot, RectangularRoom)
+testRobotMovement(StandardRobot, RectangularRoom)
 
 
 # === Problem 3
@@ -293,20 +304,38 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
     The simulation is run with NUM_ROBOTS robots of type ROBOT_TYPE, each with
     speed SPEED, in a room of dimensions WIDTH x HEIGHT.
 
-    num_robots: an int (num_robots > 0)
     speed: a float (speed > 0)
     width: an int (width > 0)
     height: an int (height > 0)
     min_coverage: a float (0 <= min_coverage <= 1.0)
     num_trials: an int (num_trials > 0)
-    robot_type: class of robot to be instantiated (e.g. StandardRobot or
+    :type num_robots: int
+    :param num_robots: an int (num_robots > 0)
+    :param robot_type: class of robot to be instantiated (e.g. StandardRobot or
                 RandomWalkRobot)
     """
-    raise NotImplementedError
+    trial_room = RectangularRoom(width, height)
+    robots = []  # list for robot objects
+    robot_positions = []  # list for the position objects of the robots
+
+    # spawn robot objects and add them to the robots list
+    for i in range(0, num_robots):
+        robots.append(StandardRobot(trial_room, speed))
+
+        if robots[i].getRobotPosition() not in robot_positions:
+            robot_positions.append(robots[i].getRobotPosition)
+        else:   # avoid 2 robots in the same position
+            while robots[i].getRobotPosition() in robot_positions:
+                # generate new robot positions until not in occupied position
+                robots[i].setRobotPosition(trial_room.getRandomPosition())
+            robot_positions.append(robots[i].getRobotPosition)
+
+    for p in robot_positions:
+        print('Robot #', i, 'has position (', p.getX(), ', ', p.getY())
 
 
 # Uncomment this line to see how much your simulation takes on average
-##print  runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot)
+# print(runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot))
 
 
 # === Problem 4

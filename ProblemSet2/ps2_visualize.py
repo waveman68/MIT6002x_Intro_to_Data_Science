@@ -6,7 +6,7 @@
 import math
 import time
 
-from tkinter import *
+from Tkinter import *
 
 
 class RobotVisualization:
