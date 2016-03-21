@@ -389,6 +389,7 @@ class RandomWalkRobot(Robot):
         self.setRobotDirection(new_direction)
         self.room.cleanTileAtPosition(self.getRobotPosition())
 
+# testRobotMovement(RandomWalkRobot, RectangularRoom)
 
 print('===== RandomWalkRobot =====')
 print('1 robot, 5 x 5, 100% coverage')
@@ -397,10 +398,10 @@ print('1 robot, 10 x 10, 75% coverage')
 print(runSimulation(1, 1.0, 10, 10, 0.75, 30, RandomWalkRobot))
 print('1 robot, 10 x 10, 90% coverage')
 print(runSimulation(1, 1.0, 10, 10, 0.9, 30, RandomWalkRobot))
-print('1 robot, 20 x 20, 100% coverage')
-print(runSimulation(1, 1.0, 20, 20, 1.0, 30, RandomWalkRobot))
-print('3 robot, 20 x 20, 100% coverage')
-print(runSimulation(3, 1.0, 20, 20, 1.0, 30, RandomWalkRobot))
+# print('1 robot, 20 x 20, 100% coverage')
+# print(runSimulation(1, 1.0, 20, 20, 1.0, 30, RandomWalkRobot))
+# print('3 robot, 20 x 20, 100% coverage')
+# print(runSimulation(3, 1.0, 20, 20, 1.0, 30, RandomWalkRobot))
 
 
 def showPlot1(title, x_label, y_label):
@@ -421,6 +422,8 @@ def showPlot1(title, x_label, y_label):
     pylab.xlabel(x_label)
     pylab.ylabel(y_label)
     pylab.show()
+
+showPlot1('Comparison of Times vs. Number Robots', 'Number of Robots', 'Clean Times')
 
 
 def showPlot2(title, x_label, y_label):
@@ -443,6 +446,8 @@ def showPlot2(title, x_label, y_label):
     pylab.xlabel(x_label)
     pylab.ylabel(y_label)
     pylab.show()
+
+showPlot2('Effect of Room Apect Ratio on Clean Times', 'Aspect Ratio', 'Clean Times')
 
 
 pos = Position(1, 1)
