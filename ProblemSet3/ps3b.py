@@ -3,7 +3,6 @@
 import random
 import pylab
 
-
 # set line width
 pylab.rcParams['lines.linewidth'] = 6
 # set font size for titles
@@ -200,9 +199,10 @@ class Patient(object):
                 self.viruses.remove(v)
 
         reproduce_viruses = self.viruses[:]
+        population_density = len(reproduce_viruses) / float(self.maxPop)
         for v in reproduce_viruses:
             try:
-                new_v = v.reproduce(len(reproduce_viruses) / float(self.maxPop))
+                new_v = v.reproduce(population_density)
                 self.viruses.append(new_v)
             except NoChildException:
                 pass
@@ -317,7 +317,7 @@ class ResistantVirus(SimpleVirus):
         """
         Returns the mutation probability for this virus.
         """
-        # TODO 4.3 DONE getter
+        # TODO 4.3: DONE getter
         return self.mutProb
 
     def isResistantTo(self, drug):
@@ -326,13 +326,13 @@ class ResistantVirus(SimpleVirus):
         is called by getResistPop() in TreatedPatient to determine how many virus
         particles have resistance to a drug.       
 
-        drug: The drug (a string)
-
         returns: True if this virus instance is resistant to the drug, False
         otherwise.
+        :type drug: str
+        :param drug: The drug (a string)
         :rtype: bool
         """
-        # TODO 4.4 DONE look up resistance
+        # TODO 4.4 DONE: look up resistance
         try:
             return self.resistances[drug]
         except KeyError:
@@ -383,7 +383,7 @@ class ResistantVirus(SimpleVirus):
         :param popDensity: the population density (a float), defined as the current
                             virus population divided by the maximum population
         """
-        # TODO reproduce resistant virus
+        # TODO 4.5: DONE reproduce resistant virus
 
         reproduce_probability = self.maxBirthProb * (1 - popDensity)
 
@@ -407,6 +407,7 @@ class ResistantVirus(SimpleVirus):
         else:
             raise NoChildException('Virus did not reproduce')
 
+
 class TreatedPatient(Patient):
     """
     Representation of a patient. The patient is able to take drugs and his/her
@@ -424,8 +425,9 @@ class TreatedPatient(Patient):
 
         maxPop: The  maximum virus population for this patient (an integer)
         """
-
-        # TODO
+        # TODO 4.6: DONE initialize treated patient
+        super(TreatedPatient, self).__init__(viruses, maxPop)
+        self.drugs = []
 
     def addPrescription(self, newDrug):
         """
@@ -437,8 +439,8 @@ class TreatedPatient(Patient):
 
         postcondition: The list of drugs being administered to a patient is updated
         """
-
-        # TODO
+        # TODO 4.7: DONE add prescription
+        self.drugs.append(newDrug)
 
     def getPrescriptions(self):
         """
@@ -447,8 +449,8 @@ class TreatedPatient(Patient):
         returns: The list of drug names (strings) being administered to this
         patient.
         """
-
-        # TODO
+        # TODO 4.8: DONE prescriptions getter
+        return self.drugs
 
     def getResistPop(self, drugResist):
         """
@@ -461,8 +463,19 @@ class TreatedPatient(Patient):
         returns: The population of viruses (an integer) with resistances to all
         drugs in the drugResist list.
         """
+        # TODO 4.9: resistant population getter
 
-        # TODO
+        resistant_population = 0
+
+        # iterate virus population and check resistance, += 1 if resistant
+        for v in self.viruses:
+            resistant = True
+            for d in drugResist:
+                resistant = resistant and v.isResistantTo(d)
+            if resistant:
+                resistant_population += 1
+
+        return resistant_population
 
     def update(self):
         """
@@ -483,9 +496,28 @@ class TreatedPatient(Patient):
 
         returns: The total virus population at the end of the update (an
         integer)
+        :rtype: int
         """
+        # TODO 4.10: complete treated patient update method
 
-        # TODO
+        clear_viruses = self.viruses[:]
+        for v in clear_viruses:
+            if v.doesClear():
+                self.viruses.remove(v)
+
+        # only resistant viruses reproduce
+        reproduce_viruses = self.getResistPop(self.getPrescriptions())
+        population_density = len(reproduce_viruses) / float(self.maxPop)
+
+        # reproduce as resistant virus in presence of drugs
+        for v in reproduce_viruses:
+            try:
+                new_v = v.reproduce(population_density, self.getPrescriptions())
+                self.viruses.append(new_v)
+            except NoChildException:
+                pass
+
+        return len(self.viruses)
 
 
 #
