@@ -1,2 +1,1 @@
-__author__ = Sam
-Broderick
+# coding=utf-8
