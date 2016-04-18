@@ -1,3 +1,5 @@
+# coding=utf-8
+
 # 6.00.2x Problem Set 5
 # Graph optimization
 #
@@ -86,3 +88,65 @@ class Digraph(object):
             for d in self.edges[str(k)]:
                 res = '{0}{1}->{2}\n'.format(res, k, d)
         return res[:-1]
+
+
+class WeightedDigraph(Digraph):
+    def __init__(self):
+        super(WeightedDigraph, self).__init__()
+
+    def addEdge(self, edge):
+        # type: (WeightedEdge) -> None
+        """
+        Adds a weighted edge object to the weighted directional graph
+        :type edge: WeightedEdge
+        :param edge: a weighted edge
+        """
+        try:
+            assert type(edge) == WeightedEdge
+        except AssertionError:
+            raise AssertionError('Edge is not a weighted edge. {0} not added'.
+                                 format(str(edge)))
+        src = edge.getSource()
+        dest = edge.getDestination()
+        weights = (edge.getTotalDistance(), edge.getOutdoorDistance())
+
+        if not (src in self.nodes and dest in self.nodes):
+            raise ValueError('Node not in graph')
+        self.edges[src].append([dest, weights])
+
+    def childrenOf(self, node):
+        children = self.edges[node]  # list of children incl. weights
+        result = []  # initialize
+        for child in children:
+            result.append(child[0])  # pick node without weights
+        return result
+
+    def __str__(self):
+        result = ''
+        for k in self.edges:
+            if len(self.edges[k]) > 0:
+                for d in self.edges[k]:
+                    result = '{0}{1}->{2} ({3}, {4})\n'.format(result, k, d[0],
+                                                               float(d[1][0]),
+                                                               float(d[1][1]))
+        return result[:-1]  # without trailing \n
+
+
+class WeightedEdge(Edge):
+    def __init__(self, src, dest, weight1, weight2):
+        # type: (Node, Node, int, int) -> WeightedEdge
+        super(WeightedEdge, self).__init__(src, dest)
+        assert type(weight1) == int
+        assert type(weight2) == int
+        self.weight1 = weight1
+        self.weight2 = weight2
+
+    def getTotalDistance(self):
+        return self.weight1
+
+    def getOutdoorDistance(self):
+        return self.weight2
+
+    def __str__(self):
+        return '{0}->{1} ({2}, {3})'.format(self.src, self.dest, self.weight1,
+                                            self.weight2)

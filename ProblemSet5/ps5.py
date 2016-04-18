@@ -17,6 +17,11 @@ from graph import *
 # Before you write any code, write a couple of sentences here 
 # describing how you will model this problem as a graph. 
 
+"""
+Model the buildings as nodes and the distances as edges.
+Read per line
+"""
+
 # This is a helpful exercise to help you organize your
 # thoughts before you tackle a big design problem!
 #
@@ -39,7 +44,7 @@ def load_map(mapFilename):
     Returns:
         a directed graph representing the map
     """
-    # TODO
+    # TODO Problem 2-1
     print("Loading map from file...")
         
 
