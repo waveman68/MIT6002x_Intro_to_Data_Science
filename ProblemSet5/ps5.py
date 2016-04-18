@@ -19,34 +19,51 @@ from graph import *
 
 """
 Model the buildings as nodes and the distances as edges.
-Read per line
+Read each line from the file.
+Check if the src and dest buildings exist, create nodes if not.
+Save an edge with the 4 parameters.
 """
 
 # This is a helpful exercise to help you organize your
 # thoughts before you tackle a big design problem!
 #
 
+
 def load_map(mapFilename):
-    """ 
-    Parses the map file and constructs a directed graph
-
-    Parameters: 
-        mapFilename : name of the map file
-
-    Assumes:
-        Each entry in the map file consists of the following four positive 
-        integers, separated by a blank space:
-            From To TotalDistance DistanceOutdoors
-        e.g.
-            32 76 54 23
-        This entry would become an edge from 32 to 76.
-
-    Returns:
-        a directed graph representing the map
+    # type: (str) -> Digraph
     """
-    # TODO Problem 2-1
+    Parses the map file and constructs a directed graph
+
+    Assumes:
+        Each entry in the map file consists of the following four positive
+        integers, separated by a blank space:
+            From To TotalDistance DistanceOutdoors
+        e.g.
+            32 76 54 23
+        This entry would become an edge from 32 to 76.
+
+    :rtype: Digraph
+    :param mapFilename: name of the file
+    :return: a directed graph representing the map
+    """
+    # TODO Problem 2-1 to 2-3: Done
     print("Loading map from file...")
-        
+    g = WeightedDigraph()
+
+    inFile = open(name=mapFilename, mode='r', buffering=0)
+    for line in inFile:
+        line_list = string.split(line)
+        assert len(line_list) == 4  # ensure 4 entries per line
+        for i in range(2):  # store nodes if not there
+            if not g.hasNode(int(line_list[i])):
+                g.addNode(int(line_list[i]))
+        # create one edge per line
+        line_edge = WeightedEdge(src=int(line_list[0]),
+                                 dest=int(line_list[1]),
+                                 weight1=int(line_list[2]),
+                                 weight2=int(line_list[3]))
+        g.addEdge(line_edge)
+    return g
 
 #
 # Problem 3: Finding the Shortest Path using Brute Force Search
@@ -54,6 +71,7 @@ def load_map(mapFilename):
 # State the optimization problem as a function to minimize
 # and what the constraints are
 #
+
 
 def bruteForceSearch(digraph, start, end, maxTotalDist, maxDistOutdoors):    
     """
@@ -115,13 +133,13 @@ def directedDFS(digraph, start, end, maxTotalDist, maxDistOutdoors):
 
 ### NOTE! These tests may take a few minutes to run!! ####
 # Uncomment below when ready to test
-# if __name__ == '__main__':
-#     # Test cases
-#     mitMap = load_map("mit_map.txt")
-#     print(isinstance(mitMap, Digraph))
-#     print(isinstance(mitMap, WeightedDigraph))
-#     print('nodes', mitMap.nodes)
-#     print('edges', mitMap.edges)
+if __name__ == '__main__':
+    # Test cases
+    mitMap = load_map("mit_map.txt")
+    print(isinstance(mitMap, Digraph))
+    print(isinstance(mitMap, WeightedDigraph))
+    print('nodes', mitMap.nodes)
+    print('edges', mitMap.edges)
 #
 #     LARGE_DIST = 1000000
 #
