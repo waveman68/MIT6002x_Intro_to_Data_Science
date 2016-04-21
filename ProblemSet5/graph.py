@@ -110,16 +110,46 @@ class WeightedDigraph(Digraph):
         dest = edge.getDestination()
         weights = (edge.getTotalDistance(), edge.getOutdoorDistance())
 
-        if not (src in self.nodes and dest in self.nodes):
+        src_exists = src in self.nodes
+        dest_exists = dest in self.nodes
+        if not (src_exists and dest_exists):
             raise ValueError('Node not in graph')
         self.edges[src].append([dest, weights])
 
-    def childrenOf(self, node):
-        children = self.edges[node]  # list of children incl. weights
-        result = []  # initialize
-        for child in children:
-            result.append(child[0])  # pick node without weights
-        return result
+    @property
+    def nodes_of_graph(self):
+        return self.nodes
+
+    def hasNode(self, node):
+        if type(node) == Node:
+            return node in self.nodes
+        elif type(node) == str:
+            n = [s for s in self.nodes if s.getName() == node]
+            if len(n) > 0:
+                return n[0]
+            else:
+                return None
+        else:
+            return None
+
+    def getEdges(self, node):
+        if type(node) == Node:
+            n = node
+        elif type(node) == str:  # this may be passed as a string
+            n = [s for s in self.nodes if s.getName() == node][0]
+        return self.edges[n]
+
+    def dist(self, parent, child):
+        # assert child in self.childrenOf(parent)
+        for e in self.edges[parent]:
+            if e[0] == child:
+                return int(e[1][0])
+
+    def dist_outdoor(self, parent, child):
+        # assert child in self.childrenOf(parent)
+        for e in self.edges[parent]:
+            if e[0] == child:
+                return int(e[1][1])
 
     def __str__(self):
         result = ''
@@ -136,8 +166,8 @@ class WeightedEdge(Edge):
     def __init__(self, src, dest, weight1, weight2):
         # type: (Node, Node, int, int) -> WeightedEdge
         super(WeightedEdge, self).__init__(src, dest)
-        assert type(weight1) == int
-        assert type(weight2) == int
+        assert type(weight1) == int or type(weight1) == float
+        assert type(weight2) == int or type(weight2) == float
         self.weight1 = weight1
         self.weight2 = weight2
 

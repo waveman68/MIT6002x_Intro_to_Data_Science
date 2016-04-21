@@ -64,4 +64,12 @@ def testSP():
     g.addEdge(gr.Edge(nodes[3], nodes[1]))
     g.addEdge(gr.Edge(nodes[4], nodes[0]))
     sp = DFS(g, nodes[0], nodes[5])
+    print('='*25)
+    sp_sh = DFSShortest(g, nodes[0], nodes[5])
+    print(sp)
+    print('='*25)
     print('Shortest path found by DFS:', gr.printPath(sp))
+    print('='*25)
+    print('Shortest path found by DFSShortest:', gr.printPath(sp_sh))
+
+testSP()
