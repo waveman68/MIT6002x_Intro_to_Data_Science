@@ -45,20 +45,20 @@ def printPath(path):
 def load_map(mapFilename):
     # type: (str) -> WeightedDigraph
     """
-    Parses the map file and constructs a directed graph
+    Parses the map file and constructs a directed graph
 
-    Assumes:
-        Each entry in the map file consists of the following four positive
-        integers, separated by a blank space:
-            From To TotalDistance DistanceOutdoors
-        e.g.
-            32 76 54 23
-        This entry would become an edge from 32 to 76.
+    Assumes:
+        Each entry in the map file consists of the following four positive
+        integers, separated by a blank space:
+            From To TotalDistance DistanceOutdoors
+        e.g.
+            32 76 54 23
+        This entry would become an edge from 32 to 76.
 
-    :param mapFilename: name of the file
+    :param mapFilename: name of the file
     :type mapFilename: str
-    :return: a directed graph representing the map
-    :rtype: WeightedDigraph
+    :return: a directed graph representing the map
+    :rtype: WeightedDigraph
     """
     # TODO Problem 2-1 to 2-3: Done
     print("Loading map from file...")
