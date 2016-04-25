@@ -230,8 +230,8 @@ class ClusterSet(object):
 
         merged_c = Cluster(points, self.pointType)
         self.add(merged_c)
-        self.members.pop(c1)
-        self.members.pop(c2)
+        self.members.remove(c1)
+        self.members.remove(c2)
 
     def findClosest(self, linkage):
         # TODO
@@ -371,10 +371,21 @@ def hCluster(points, linkage, numClusters, printHistory):
 
 def test():
     points = buildCityPoints('cityTemps.txt', False)
-    hCluster(points, Cluster.singleLinkageDist, 10, True)
-    # points = buildCityPoints('cityTemps.txt', True)
-    # hCluster(points, Cluster.maxLinkageDist, 10, False)
-    # hCluster(points, Cluster.averageLinkageDist, 10, False)
-    # hCluster(points, Cluster.singleLinkageDist, 10, False)
+    print('singleLinkageDist, 10, PrintHistory without scaling')
+    print('-'*25)
+    hCluster(points, Cluster.singleLinkageDist, 5, True)
+    points = buildCityPoints('cityTemps.txt', True)
+    print('='*25)
+    print('singleLinkageDist, 10, PrintHistory with scaling')
+    print('-'*25)
+    hCluster(points, Cluster.singleLinkageDist, 5, False)
+    print('='*25)
+    print('maxLinkageDist, 10, PrintHistory with scaling')
+    print('-'*25)
+    hCluster(points, Cluster.maxLinkageDist, 5, False)
+    print('='*25)
+    print('averageLinkageDist, 10, PrintHistory with scaling')
+    print('-'*25)
+    hCluster(points, Cluster.averageLinkageDist, 5, False)
 
 test()
